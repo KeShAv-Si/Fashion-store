@@ -26,7 +26,15 @@ app.use(cors({
 app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
-  res.send("API working");
+  res.json({ 
+    success: true, 
+    message: "UrbanZila API is running",
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "healthy", uptime: process.uptime() });
 });
 
 app.listen(port, () => console.log("Server started on PORT: " + port));
