@@ -10,15 +10,34 @@ const connectDB = async () => {
   });
 
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
+    const options = {
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
-      family: 4
-    });
+      family: 4,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      retryWrites: true,
+      w: 'majority'
+    };
+
+    // Handle SSL/TLS for production
+    if (process.env.NODE_ENV === 'production') {
+      options.tls = true;
+      options.tlsAllowInvalidCertificates = false;
+      options.tlsAllowInvalidHostnames = false;
+    }
+
+    await mongoose.connect(process.env.MONGODB_URI, options);
     console.log("MongoDB connection successful");
   } catch (error) {
-    console.error("Failed to connect to MongoDB:", error);
-    console.error("Connection string:", process.env.MONGODB_URI ? "Present" : "Missing");
+    console.error("Failed to connect to MongoDB:", error.message);
+    console.error("Connection string present:", process.env.MONGODB_URI ? "Yes" : "No");
+    
+    // Log more details in production
+    if (process.env.NODE_ENV === 'production') {
+      console.error("Full error:", JSON.stringify(error, null, 2));
+    }
+    
     // Don't exit in production, let it retry
     if (process.env.NODE_ENV !== 'production') {
       process.exit(1);
