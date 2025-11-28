@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: urbanzila-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: CLOUDINARY_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_SECRET_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: PORT
+        value: 4000
