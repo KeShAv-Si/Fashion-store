@@ -19,27 +19,34 @@ const Profile = () => {
 
       try {
         const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+        console.log("Fetching profile from:", `${API_URL}/api/user/profile`);
+        console.log("Token:", token ? "Present" : "Missing");
+        
         const response = await fetch(`${API_URL}/api/user/profile`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         });
 
+        console.log("Response status:", response.status);
         const data = await response.json();
+        console.log("Response data:", data);
 
         if (data.success) {
           setUserData(data.user);
+          toast.success("Profile loaded successfully");
         } else {
-          toast.error(data.message);
-          if (data.message === "Invalid token") {
+          toast.error(data.message || "Failed to load profile");
+          if (data.message === "Invalid token" || response.status === 401) {
             localStorage.removeItem("token");
             navigate("/login");
           }
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        toast.error("Failed to load profile");
+        toast.error("Cannot connect to server. Backend may be sleeping. Please wait 30 seconds and refresh.");
       } finally {
         setLoading(false);
       }

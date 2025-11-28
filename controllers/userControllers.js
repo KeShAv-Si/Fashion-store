@@ -87,7 +87,10 @@ const registerUser = async (req, res) => {
 // Route to get user profile
 const getUserProfile = async (req, res) => {
   try {
+    console.log("getUserProfile called, userId:", req.userId);
+    
     const user = await userModel.findById(req.userId).select("-password");
+    console.log("User found:", user ? "Yes" : "No");
     
     if (!user) {
       return res.json({ success: false, message: "User not found" });
@@ -95,7 +98,7 @@ const getUserProfile = async (req, res) => {
 
     res.json({ success: true, user });
   } catch (error) {
-    console.log(error);
+    console.error("Error in getUserProfile:", error);
     res.json({ success: false, message: error.message });
   }
 };
