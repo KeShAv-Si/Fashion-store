@@ -10,12 +10,19 @@ const connectDB = async () => {
   });
 
   try {
-    // Remove /ecommerce from URI as it's already in the connection string
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 45000,
+      family: 4
+    });
     console.log("MongoDB connection successful");
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error);
-    process.exit(1);
+    console.error("Connection string:", process.env.MONGODB_URI ? "Present" : "Missing");
+    // Don't exit in production, let it retry
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
   }
 };
 
